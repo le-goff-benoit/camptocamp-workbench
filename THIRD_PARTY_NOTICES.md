@@ -8,7 +8,7 @@ Les composants embarqués conservent leurs notices d’origine :
 | xterm addon-fit | `web/vendor/addon-fit.js` | `web/vendor/LICENSE-addon-fit` |
 | Lato | `web/fonts/Lato-Regular.ttf`, `Lato-Bold.ttf` | `web/fonts/LICENSE-Lato` |
 
-OpenClaw, Codex, Claude Code, Playwright et ReportLab sont installés séparément,
+OpenClaw, Codex, Claude Code, et Playwright sont installés séparément,
 avec leurs propres conditions et dépendances. Les noms et logos restent ceux
 de leurs titulaires. La publication ne confère aucun droit sur les marques.
 

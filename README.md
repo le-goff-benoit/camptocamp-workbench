@@ -1,12 +1,8 @@
-# Camptocamp Workbench
+# OpenClaw
 
 Dashboard local pour les demandes clients, emails, agenda et releases, avec Codex
 et/ou Claude Code. Le workflow intégré fonctionne sans profils d’agents ni dépôt
 privé. Chaque collègue installe son instance et connecte ses propres comptes.
-
-**[Guide pratique PDF](docs/guide-camptocamp-workbench.pdf)** ·
-[Présentation PDF actualisée](docs/presentation-camptocamp-workbench.pdf) ·
-[Source du guide](docs/guide.md) · [Dépendances Python](requirements.txt)
 
 ## Fonctions
 
@@ -34,7 +30,7 @@ de tâches, n’envoie pas d’emails et ne modifie pas le calendrier.
 La cible est **Linux avec un bureau**, notamment Ubuntu 22.04/24.04. Le lanceur
 et le service utilisent `xdg-open` et `systemd --user`. Windows natif et macOS
 ne sont pas pris en charge par cet installateur. Ni Docker ni serveur Odoo
-ne sont nécessaires pour utiliser Workbench.
+ne sont nécessaires pour utiliser OpenClaw.
 
 ### 1. Prérequis système
 
@@ -58,8 +54,8 @@ python3 --version
 
 Le backend utilise **Python >= 3.10 et sa bibliothèque standard**, dont SQLite
 avec FTS5. Aucun paquet Python n’est nécessaire pour le faire fonctionner.
-`requirements.txt` documente ce choix. `requirements-docs.txt` sert uniquement
-à reconstruire le PDF. `poppler-utils` fournit `pdftotext` pour la bibliothèque.
+`requirements.txt` documente ce choix. `poppler-utils` fournit `pdftotext`
+pour la bibliothèque.
 
 ### 2. OpenClaw et fournisseurs
 
@@ -102,7 +98,7 @@ python3 scripts/manage.py open
 ```
 
 `--check` ne modifie aucune configuration. `--install` crée un profil OpenClaw
-**workbench**, un service utilisateur et le lanceur **Camptocamp Workbench**.
+**workbench**, un service utilisateur et le lanceur **OpenClaw**.
 Le profil OpenClaw par défaut reste distinct. Après un déplacement du dossier
 cloné, réinstaller le lanceur et le service.
 
@@ -120,7 +116,7 @@ libres avant le démarrage.
    `codex`, puis `/plugins`, installer et connecter Gmail et Google Calendar.
    Pour Claude : les connecter dans [les connecteurs Claude](https://claude.ai/customize/connectors),
    avec le même compte Claude que le terminal, puis cliquer sur **Vérifier les
-   connexions Claude** dans Workbench.
+   connexions Claude** dans OpenClaw.
 4. Cliquer sur **Actualiser les emails et l’agenda**. Un relevé réussi confirme
    l’accès effectif. « Installé » confirme seulement la présence du logiciel.
 5. Activer **Actualiser automatiquement toutes les 5 minutes**, puis enregistrer.
@@ -205,11 +201,11 @@ et identifiants sont propres à chacun. Aucun état local, email ou jeton n’es
 | --- | --- |
 | « Authentification requise » du Control UI | Ouvrir le lanceur ou `python3 scripts/manage.py open`. Utiliser `/workbench/`. Le Control UI est une autre vue. |
 | Google en 401 ou « à reconnecter » | Reconnecter le compte chez le fournisseur choisi, vérifier le compte du terminal, puis actualiser. |
-| CLI présente dans le terminal, absente du service | Vérifier son installation utilisateur et son PATH, puis réinstaller Workbench. |
+| CLI présente dans le terminal, absente du service | Vérifier son installation utilisateur et son PATH, puis réinstaller OpenClaw. |
 | Emails d’un projet incomplets | Vérifier adresses/domaines et recherche Gmail, puis actualiser le projet. |
 | Analyse email en échec | Corriger la connexion ou le fournisseur, puis cliquer sur **Réanalyser**. |
 | Vue historique sans mesures | Compatibilité facultative absente. Le suivi intégré reste opérationnel. |
-| Port déjà occupé | Arrêter l’autre instance Workbench avant de démarrer. |
+| Port déjà occupé | Arrêter l’autre instance OpenClaw avant de démarrer. |
 | Bibliothèque PDF vide | Vérifier `pdftotext` et la présence de texte. Un scan demande un OCR préalable. |
 
 ## Tests et développement
@@ -230,15 +226,4 @@ personnels. La recette navigateur utilise ses propres adaptateurs fictifs.
 Pour l’installation active, `python3 scripts/live_check.py` est un contrôle de
 lecture seule. Node et Playwright servent aux tests, pas au backend Python.
 
-### Reconstruire le guide PDF
-
-```bash
-python3 -m venv .venv-docs
-.venv-docs/bin/pip install -r requirements-docs.txt
-.venv-docs/bin/python scripts/build_guide.py
-```
-
-Le guide est issu de la présentation « Camptocamp - Workbench et agents Odoo »,
-complétée avec les fonctions livrées. Sa source est `docs/guide.md`. Les captures
-distribuées utilisent exclusivement des projets et emails fictifs. Les licences
-des composants embarqués figurent dans [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Les licences des composants embarqués figurent dans [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
