@@ -1,0 +1,21 @@
+{
+  "id": "workbench",
+  "name": "Projets et releases",
+  "description": "Suivi local des demandes, mémoire Markdown et bibliothèque documentaire.",
+  "version": "0.4.0",
+  "activation": {"onStartup": true},
+  "skills": ["./skills"],
+  "contracts": {
+    "tools": ["workbench_status", "workbench_project", "workbench_create_release", "workbench_create_request", "workbench_transition", "workbench_ingest", "workbench_library", "workbench_analyze", "workbench_memory", "workbench_memory_note"]
+  },
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "stateDir": {"type": "string"},
+      "backendPort": {"type": "integer", "minimum": 1024, "maximum": 65535},
+      "gatewayPort": {"type": "integer", "minimum": 1024, "maximum": 65535}
+    },
+    "required": ["stateDir"]
+  }
+}

@@ -1,0 +1,37 @@
+import { escape as e, icon, ago } from './text.mjs';
+
+export const providerName = id => id === 'claude' ? 'Claude Code' : 'Codex';
+const choice = (id, label, current, description) => `<div class="config-field"><label for="${id}">${label}</label><select id="${id}" name="${id}"><option value="codex"${current !== 'claude' ? ' selected' : ''}>Codex</option><option value="claude"${current === 'claude' ? ' selected' : ''}>Claude Code</option></select><p class="field-hint">${description}</p></div>`;
+
+export function providerSettingsHTML(settings) {
+  const selected = settings.providers ?? {};
+  return `<section class="card full config-card"><div><h2>Fournisseurs</h2><p class="hint">Choisissez séparément qui lit vos sources et qui réalise les analyses.</p></div><div class="config-fields">
+    ${choice('source-provider', 'Emails et agenda', selected.sources, 'Actualisation générale, 50 derniers échanges par projet et récupération des emails complets.')}
+    ${choice('analysis-provider', 'Analyses et propositions de plan', selected.analysis, 'Repérage des emails à traiter et analyse des nouvelles demandes.')}
+    </div><label class="checkline sync-choice"><input type="checkbox" name="source-auto-sync"${settings.source_sync?.enabled ? ' checked' : ''}><span><strong>Actualiser automatiquement toutes les 5 minutes</strong><small>Emails et agenda, tant que le service local fonctionne. Le dernier relevé est conservé si une connexion échoue.</small></span></label><p class="hint">Les comptes se configurent dans <button type="button" class="link" data-nav="connections">Connexions</button>. Les terminaux restent libres de leur choix Codex ou Claude.</p></section>`;
+}
+
+export function workflowSettingsHTML(settings, workflow = {}) {
+  return `<section class="card full config-card"><div class="connection-card-head"><div><h2>Workflow des releases Odoo</h2><p class="hint">Le workflow intégré permet d’ouvrir une release, créer ses demandes, valider le plan et réceptionner les résultats.</p></div><span class="connection-state connected">${workflow.available ? 'Compatibilité historique disponible' : 'Workflow intégré actif'}</span></div><p class="hint">Un collègue utilise les boutons du dashboard sans installer de profils d’agents ni de moteur privé. Codex ou Claude est nécessaire uniquement pour les analyses et les connexions Google. Les releases historiques gardent leur moteur et leurs validations.</p><details><summary>Compatibilité avec un moteur historique · facultatif</summary><div class="config-field section"><label for="workflow-home">Dossier du moteur de workflow</label><input id="workflow-home" name="workflow-home" value="${e(settings.workflow_home || '')}" placeholder="${e(workflow.home || '')}"><p class="field-hint">Renseignez ce dossier seulement pour reprendre des releases historiques. Il doit contenir les scripts et modèles de leur moteur d’origine. Il n’est pas nécessaire pour une nouvelle release intégrée.</p></div>${workflow.missing?.length ? `<p class="field-hint">Adaptateur historique non connecté : ${workflow.missing.map(e).join(', ')}.</p>` : ''}</details></section>`;
+}
+
+function connectionState(claude, suffix) {
+  const server = (claude.servers ?? []).find(s => s.name?.endsWith(suffix));
+  const state = server?.status;
+  return state === 'connected' ? '<span class="connection-state connected">Connecté</span>'
+    : state === 'needs-auth' ? '<span class="connection-state attention">À reconnecter</span>'
+    : '<span class="connection-state">À vérifier</span>';
+}
+
+export function connectionsHTML(snapshot) {
+  const providers = snapshot.providers ?? {}, selected = snapshot.settings.providers ?? {}, claude = providers.claude ?? {};
+  const native = snapshot.native_sources;
+  const sync = providers.sync ?? {};
+  return `<div class="page-head"><div><div class="eyebrow">Vos comptes</div><h1>Connexions</h1><p>Connectez Gmail et Google Calendar auprès du fournisseur choisi.</p></div><button class="secondary" data-nav="settings">${icon('settings')}Choisir les fournisseurs</button></div>
+  <section class="connection-summary" aria-label="Configuration active"><div><small>Emails et agenda</small><strong>${providerName(selected.sources)}</strong></div><div><small>Analyses</small><strong>${providerName(selected.analysis)}</strong></div><p>Les lectures conservent jusqu’à 50 emails. Aucune analyse ne démarre lors d’une actualisation.</p></section>
+  <div class="settings-grid connection-cards">
+    <section class="card config-card"><div class="connection-card-head"><h2>Codex</h2><span class="connection-state">${providers.codex?.installed ? 'Installé' : 'Installation à vérifier'}</span></div><p>Utilise le compte ChatGPT connecté au terminal Codex.</p><ol class="native-setup"><li>Ouvrez Codex, puis <code>/plugins</code>.</li><li>Connectez les plugins Gmail et Google Calendar.</li><li>Revenez ici et actualisez les sources.</li></ol><div class="config-actions"><button class="secondary" data-action="chatgpt-login">Connexion Codex</button><button class="ghost" data-action="codex-terminal">Ouvrir Codex</button></div><a href="https://learn.chatgpt.com/docs/plugins" target="_blank" rel="noreferrer">Aide des plugins Codex ↗</a><p class="field-hint">« Installé » confirme la présence du logiciel. Un relevé réussi confirme l’accès aux sources.</p></section>
+    <section class="card config-card"><div class="connection-card-head"><h2>Claude Code</h2><span class="connection-state">${claude.installed ? 'Installé' : 'Installation nécessaire'}</span></div><p>Utilise le compte Claude connecté au terminal Claude Code.</p><div class="connector-list"><div><span>Gmail</span>${connectionState(claude, 'Gmail')}</div><div><span>Google Calendar</span>${connectionState(claude, 'Google Calendar')}</div></div>${claude.checked ? `<p class="field-hint">Vérifié ${e(ago(claude.checked))}.</p>` : '<p class="field-hint">Les connexions n’ont pas encore été vérifiées depuis Workbench.</p>'}${claude.error ? `<p class="error">${e(claude.error)}</p>` : ''}<div class="config-actions"><button class="secondary" data-action="check-claude">${icon('refresh')}Vérifier les connexions Claude</button><button class="ghost" data-action="claude-login">Connexion Claude</button></div><a href="https://claude.ai/customize/connectors" target="_blank" rel="noreferrer">Connecter Gmail et Google Calendar dans Claude ↗</a><p class="field-hint">Connectez les services sur claude.ai avec le même compte que Claude Code, puis vérifiez ici.</p></section>
+    <section class="card full config-card"><div class="connection-card-head"><div><h2>Actualiser les sources avec ${providerName(selected.sources)}</h2><p class="hint">${sync.enabled ? 'Synchronisation automatique toutes les 5 minutes.' : 'Synchronisation manuelle. Activez la relève toutes les 5 minutes dans Paramètres.'}${sync.running ? ' Lecture en cours…' : ''}</p></div><button data-action="refresh-codex"${sync.running ? ' disabled' : ''}>${icon('refresh')}Actualiser les emails et l’agenda</button></div>${native?.updated ? `<p class="notice info">Dernier relevé réussi via ${providerName(native.provider)} · ${e(ago(native.updated))} · ${native.emails} email(s), ${native.events} événement(s).</p>` : '<p class="hint">Aucun relevé conservé. Connectez les services, puis lancez la première actualisation.</p>'}${sync.error ? `<p class="error" role="status">Dernière tentative : ${e(sync.error)} Le dernier relevé réussi est conservé.</p>` : ''}</section>
+  </div>`;
+}

@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.runtime/
+node_modules/
+test-results/
+*.log
+.venv*/
+playwright-report/
+.env
+.env.*
+*.eml
+*.sqlite3
+MEMORY.md
+JOURNAL.md
+memory/

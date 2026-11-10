@@ -1,0 +1,3 @@
+# Runtime: Python >= 3.10, standard library only (including sqlite3 with FTS5).
+# No Python package or private repository is required to run Workbench.
+# System dependencies and optional provider CLIs are installed by install.sh.

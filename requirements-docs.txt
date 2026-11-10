@@ -1,0 +1,2 @@
+# Optional: rebuild docs/guide-camptocamp-workbench.pdf.
+reportlab==4.4.10
