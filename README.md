@@ -230,10 +230,6 @@ personnels. La recette navigateur utilise ses propres adaptateurs fictifs.
 Pour l’installation active, `python3 scripts/live_check.py` est un contrôle de
 lecture seule. Node et Playwright servent aux tests, pas au backend Python.
 
-Le modèle de recette GitHub Actions est fourni dans [ci/github-actions.yml](ci/github-actions.yml).
-Il peut être copié dans `.github/workflows/` avec un compte autorisé à gérer les
-workflows GitHub. Son activation est facultative pour installer et utiliser Workbench.
-
 ### Reconstruire le guide PDF
 
 ```bash
