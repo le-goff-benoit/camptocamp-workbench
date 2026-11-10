@@ -60,7 +60,7 @@ class CodexBridge:
             self.source_thread = None
             self.reader = threading.Thread(target=self._reader, args=(self.process,), daemon=True)
             self.reader.start()
-            self._rpc('initialize', {'clientInfo': {'name': 'camptocamp_workbench', 'title': 'Camptocamp Workbench', 'version': '0.4.0'}})
+            self._rpc('initialize', {'clientInfo': {'name': 'camptocamp_workbench', 'title': 'OpenClaw', 'version': '0.4.0'}})
             self._write({'method': 'initialized', 'params': {}})
 
     def _reader(self, process):

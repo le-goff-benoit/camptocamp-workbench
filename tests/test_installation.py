@@ -22,6 +22,7 @@ class InstallationTests(Fixture):
         repeated = json.loads((home/'.openclaw-workbench/openclaw.json').read_text())
         self.assertEqual(repeated['gateway']['auth']['token'], credential)
         settings = json.loads((home/'.local/share/openclaw-workbench/settings.json').read_text())
+        self.assertEqual(repeated['ui']['assistant']['name'], 'OpenClaw')
         self.assertEqual(settings['roots'], [])
         self.assertEqual(settings['library'], [])
         self.assertFalse(settings['source_sync']['enabled'])
@@ -29,3 +30,4 @@ class InstallationTests(Fixture):
         unit = (home/'.config/systemd/user/openclaw-workbench.service').read_text()
         self.assertIn('UMask=0077', unit)
         self.assertTrue((home/'.local/share/applications/openclaw-workbench.desktop').is_file())
+        self.assertIn('Name=OpenClaw', (home/'.local/share/applications/openclaw-workbench.desktop').read_text())

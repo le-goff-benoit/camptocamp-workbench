@@ -1,4 +1,4 @@
-// Camptocamp Workbench — single-page interface.
+// OpenClaw — single-page interface.
 // State lives in the URL (?v=…&p=…&r=…&t=…&d=…&q=…) so views can be reloaded,
 // shared locally and navigated with the browser history.
 import { renderDashboard, renderSources, overviewHTML, metricsHTML, progressHTML } from './dashboard.mjs';
@@ -33,8 +33,8 @@ let modalAction;
 async function rpc(action, data = {}) {
   const response = await fetch('/workbench/api', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Workbench-UI': '1' }, body: JSON.stringify({ action, data }) });
   let payload;
-  try { payload = await response.json(); } catch { throw new Error('Service Workbench indisponible. Vérifiez qu’il est démarré.'); }
-  if (!response.ok || !payload.ok) throw new Error(payload.error === 'Commande inconnue' ? 'Fonction disponible après le redémarrage du service Workbench.' : payload.error ?? 'Service indisponible');
+  try { payload = await response.json(); } catch { throw new Error('Service OpenClaw indisponible. Vérifiez qu’il est démarré.'); }
+  if (!response.ok || !payload.ok) throw new Error(payload.error === 'Commande inconnue' ? 'Fonction disponible après le redémarrage du service OpenClaw.' : payload.error ?? 'Service indisponible');
   return payload.result;
 }
 function toast(message, error = false) {
@@ -909,4 +909,4 @@ async function boot() {
   await render();
   void refreshDashboardData();
 }
-boot().catch(error => { content().innerHTML = empty('Ouvrir votre espace local', error.message + ' Utilisez « Camptocamp Workbench » dans les applications du bureau.', '', '', 'alert'); });
+boot().catch(error => { content().innerHTML = empty('Ouvrir votre espace local', error.message + ' Utilisez « OpenClaw » dans les applications du bureau.', '', '', 'alert'); });

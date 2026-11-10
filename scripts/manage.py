@@ -55,14 +55,14 @@ def install():
                         'auth': {'mode': 'token', 'token': secrets.token_urlsafe(40)},
                         'controlUi': {'allowedOrigins': [f'http://127.0.0.1:{GATEWAY_PORT}', f'http://localhost:{GATEWAY_PORT}']}},
             'agents': {'defaults': {'workspace': str(STATE / 'workspace'), 'model': {'primary': 'openai/gpt-5.5'}}},
-            'ui': {'assistant': {'name': 'Camptocamp Workbench', 'avatar': '/workbench/static/brand/camptocamp-icon.png'}},
+            'ui': {'assistant': {'name': 'OpenClaw', 'avatar': '/workbench/static/brand/camptocamp-icon.png'}},
             'plugins': {'allow': ['workbench', 'openai'], 'load': {'paths': [str(ROOT / 'plugin')]},
                         'entries': {'workbench': {'enabled': True, 'config': {'stateDir': str(STATE), 'backendPort': BACKEND_PORT, 'gatewayPort': GATEWAY_PORT}}}},
         }
     allow = config['plugins'].setdefault('allow', [])
     if 'openai' not in allow:
         allow.append('openai')
-    config.setdefault('ui', {}).setdefault('assistant', {}).update(name='Camptocamp Workbench', avatar='/workbench/static/brand/camptocamp-icon.png')
+    config.setdefault('ui', {}).setdefault('assistant', {}).update(name='OpenClaw', avatar='/workbench/static/brand/camptocamp-icon.png')
     atomic(configuration, json.dumps(config, ensure_ascii=False, indent=2) + '\n')
     from backend.core import Workbench
     Workbench(STATE)  # Empty roots until selected in Settings.
@@ -71,7 +71,7 @@ def install():
     unit_dir.mkdir(parents=True, exist_ok=True)
     path_env = str(Path(binary).parent) + ':' + str(Path.home() / '.local/bin') + ':/usr/local/bin:/usr/bin:/bin'
     unit = f'''[Unit]
-Description=OpenClaw Workbench local (projets et releases)
+Description=OpenClaw local (projets et releases)
 After=network.target
 
 [Service]
@@ -93,7 +93,7 @@ WantedBy=default.target
     apps.mkdir(parents=True, exist_ok=True)
     atomic(apps / 'openclaw-workbench.desktop', f'''[Desktop Entry]
 Type=Application
-Name=Camptocamp Workbench
+Name=OpenClaw
 Comment=Projets, releases, demandes et terminaux locaux
 Exec={sys.executable} {ROOT}/scripts/manage.py open
 Icon={ROOT}/web/brand/camptocamp-icon.png
@@ -119,7 +119,7 @@ def ready():
 def start(restart=False):
     install()
     if ready() and not restart:
-        print('OpenClaw Workbench est déjà démarré.')
+        print('OpenClaw est déjà démarré.')
         return
     loaded = subprocess.run(['systemctl', '--user', 'daemon-reload'], capture_output=True, text=True)
     if loaded.returncode == 0:
@@ -134,7 +134,7 @@ def start(restart=False):
         atomic(STATE / 'gateway.pid', str(process.pid))
     for _ in range(60):
         if ready():
-            print(f'OpenClaw Workbench démarré : http://127.0.0.1:{GATEWAY_PORT}/workbench/')
+            print(f'OpenClaw démarré : http://127.0.0.1:{GATEWAY_PORT}/workbench/')
             return
         time.sleep(0.4)
     raise SystemExit('Démarrage non confirmé. Consultez le journal du service workbench.')
@@ -165,7 +165,7 @@ def main():
             query = '?project=' + project['id']
         subprocess.run(['xdg-open', f'http://127.0.0.1:{GATEWAY_PORT}/workbench/{query}#access={token}'],
                        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-        print('Interface Camptocamp Workbench ouverte dans le navigateur local.')
+        print('Interface OpenClaw ouverte dans le navigateur local.')
     elif args.command == 'stop':
         subprocess.run(['systemctl', '--user', 'stop', SERVICE], capture_output=True)
         pid = STATE / 'gateway.pid'
@@ -177,7 +177,7 @@ def main():
                     os.kill(number, signal.SIGTERM)
             except (OSError, ValueError):
                 pass
-        print('Arrêt demandé au service Workbench uniquement.')
+        print('Arrêt demandé au service OpenClaw uniquement.')
 
 
 if __name__ == '__main__':

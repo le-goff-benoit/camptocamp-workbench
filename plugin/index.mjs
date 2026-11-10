@@ -37,7 +37,7 @@ export default {
         child = spawn('python3', ['-m', 'backend.server', '--state', stateDir, '--port', String(port), '--gateway-port', String(gatewayPort)],
           { cwd: root, stdio: ['ignore', 'pipe', 'pipe'] });
         child.stdout.on('data', () => {});
-        child.stderr.on('data', chunk => api.logger.warn('Service Workbench : ' + String(chunk).slice(0, 500)));
+        child.stderr.on('data', chunk => api.logger.warn('Service OpenClaw : ' + String(chunk).slice(0, 500)));
         child.on('error', error => api.logger.error('Démarrage Workbench : ' + error.message));
         for (let attempt = 0; attempt < 40; attempt++) {
           try {
@@ -46,7 +46,7 @@ export default {
           } catch {}
           await new Promise(r => setTimeout(r, 100));
         }
-        throw new Error('Le service Workbench ne répond pas');
+        throw new Error('Le service OpenClaw ne répond pas');
       },
       stop() { if (child && child.exitCode === null) child.kill('SIGTERM'); },
     });
@@ -66,7 +66,7 @@ export default {
           response.pipe(res);
         });
         upstream.setTimeout(240000, () => upstream.destroy(new Error('Délai du service dépassé')));
-        upstream.on('error', () => { if (!res.headersSent) res.writeHead(502); res.end('Service Workbench indisponible'); });
+        upstream.on('error', () => { if (!res.headersSent) res.writeHead(502); res.end('Service OpenClaw indisponible'); });
         req.pipe(upstream);
         return true;
       },
